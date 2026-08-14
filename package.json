@@ -1,0 +1,11 @@
+{
+  "name": "muscle-mosaic",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive 2D muscle cross-section: motor unit recruitment, rate coding, fatigue and recovery.",
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node scripts/model-check.mjs"
+  }
+}

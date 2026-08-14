@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Muscle Mosaic — motor unit recruitment & fatigue</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Muscle Mosaic</h1>
+      <p class="subtitle">A cross-section of ~950 fibers &amp; 50 motor units — recruitment, rate coding, fatigue and recovery, live.</p>
+    </div>
+    <details class="about">
+      <summary>About the model</summary>
+      <div class="about-body">
+        <p><b>Henneman's size principle.</b> Motor units are recruited smallest-first as force demand rises:
+          slow Type&nbsp;I units first, then fast fatigue-resistant Type&nbsp;IIa, then fast fatigable Type&nbsp;IIx.
+          Derecruitment happens in reverse order.</p>
+        <p><b>Rate coding.</b> Once recruited, a unit's firing rate rises (~6→50&nbsp;Hz) with drive, ramping its force
+          from ~20% to 100% of its capacity. Recruitment is complete by ~88% MVC; rate coding does the rest.</p>
+        <p><b>Fatigue.</b> Active fibers accumulate fatigue that scales their force down. Type&nbsp;IIx fatigues
+          ~20× faster than Type&nbsp;I; IIa is in between.</p>
+        <p><b>Recovery.</b> At rest, fatigue decays exponentially — but the fast-fatiguing IIx fibers recover
+          <i>fastest</i> (τ ≈ 30&nbsp;s, think PCr/pH restoration), while slow fibers that have fatigued recover
+          slowest (τ ≈ 2.5&nbsp;min). The fibers that did the work need the rest.</p>
+        <p><b>Maintain-force mode</b> models what happens when you hold a position: the controller raises neural
+          drive to compensate for fatiguing fibers, so you watch recruitment climb until the muscle can no longer
+          hit the target — contractile failure. <b>Fixed-drive mode</b> holds drive constant and lets force sag.</p>
+        <p class="fine">Simplifications: one fatigue scalar per fiber, lumped force–frequency curve, uniform MU
+          territories, no potentiation/LEP, fiber counts scaled down ~100×. Hover any fiber to inspect its motor unit.</p>
+      </div>
+    </details>
+  </header>
+
+  <main>
+    <section class="stage" id="stage">
+      <div class="muscle-wrap">
+        <canvas id="muscle"></canvas>
+        <div id="tooltip" class="tooltip" hidden></div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-legend">
+          <span><i class="ln ln-force"></i>Force</span>
+          <span><i class="ln ln-drive"></i>Drive</span>
+          <span><i class="ln ln-fatigue"></i>Fatigue</span>
+          <span><i class="ln ln-target"></i>Target</span>
+        </div>
+        <canvas id="chart"></canvas>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="card">
+        <div class="slider-head">
+          <label id="intensity-label" for="intensity">Target force</label>
+          <span id="intensity-val" class="big-num">0%</span>
+        </div>
+        <input type="range" id="intensity" min="0" max="100" value="0" step="1" />
+        <div class="seg" role="group" aria-label="Control mode">
+          <button id="mode-maintain" class="active">Maintain force<br /><small>auto-recruit</small></button>
+          <button id="mode-fixed">Fixed drive<br /><small>force sags</small></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Protocols</div>
+        <div id="presets" class="presets"></div>
+        <div class="row">
+          <div class="seg" role="group" aria-label="Time scale">
+            <button data-speed="1" class="active">1×</button>
+            <button data-speed="2">2×</button>
+            <button data-speed="4">4×</button>
+          </div>
+          <button id="pause" class="tool">⏸ Pause</button>
+          <button id="reset" class="tool">↺ Reset</button>
+        </div>
+        <label class="check"><input type="checkbox" id="shimmer" checked /> Rate-coding shimmer</label>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Whole muscle</div>
+        <div class="stat-grid">
+          <span>Force output</span><b id="stat-force">0%</b>
+          <span>Neural drive</span><b id="stat-drive">0%</b>
+          <span>Units recruited</span><b id="stat-recruited">0 / 50</b>
+          <span>Mean firing rate</span><b id="stat-rate">0 Hz</b>
+        </div>
+        <div id="stat-status" class="status">Fresh · at rest</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">By fiber type <span class="hint">recruited · fatigue · force</span></div>
+        <div id="type-rows"></div>
+      </div>
+
+      <div class="card legend">
+        <div class="card-title">Reading the mosaic</div>
+        <p><span class="swatch sw-low"></span> dim slate = standby &nbsp;→&nbsp; <span class="swatch sw-high"></span> vivid = force output</p>
+        <p><span class="swatch sw-fat"></span> violet stain = fatigue — lingers while recovering</p>
+        <p>flicker speed = firing rate (drive) &nbsp;·&nbsp; bright pulse = just recruited</p>
+        <p class="fine">Hover a fiber to highlight its motor unit's scattered territory.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
