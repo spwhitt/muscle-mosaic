@@ -53,12 +53,13 @@ export class Chart {
     const X = (t) => padL + ((t - x0) / WINDOW_S) * iw;
     const Y = (v) => padT + (1 - v) * ih;
 
-    // Grid + labels.
+    // Grid + labels. Fewer ticks when the strip is short.
     ctx.strokeStyle = 'rgba(148, 163, 197, 0.10)';
     ctx.fillStyle = 'rgba(139, 152, 184, 0.75)';
     ctx.font = '9px system-ui, sans-serif';
     ctx.lineWidth = 1;
-    for (const v of [0, 0.25, 0.5, 0.75, 1]) {
+    const ticks = h < 80 ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1];
+    for (const v of ticks) {
       ctx.beginPath();
       ctx.moveTo(padL, Y(v));
       ctx.lineTo(w - padR, Y(v));
